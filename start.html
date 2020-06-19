@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>box</title>
+
+    <script src="babylon.max.js"></script>
+    <script src = babylon.gui.min.js></script>
+	
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="renderCanvas"></canvas>
+    <script>
+if (BABYLON.Engine.isSupported()) {
+    var canvas = document.getElementById("renderCanvas");
+    var engine = new BABYLON.Engine(canvas, true);
+    var scene;
+
+
+		
+var createScene = function () {
+    scene = new BABYLON.Scene(engine);
+    scene.clearColor = new BABYLON.Color3(.5, .5, .5);
+
+    // camera
+    var camera = new BABYLON.ArcRotateCamera("camera1", 0, 0, 0, new BABYLON.Vector3(0, 0, -0), scene);
+    camera.setPosition(new BABYLON.Vector3(0, 1, -10));
+    camera.attachControl(canvas, true);
+
+    var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+    light.intensity = 0.7;
+
+    var light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, -1, 0), scene);
+    light1.intensity = 0.5;
+
+    var pl = new BABYLON.PointLight("pl", BABYLON.Vector3.Zero(), scene);
+    pl.intensity = 0.5;
+
+    var mat = new BABYLON.StandardMaterial("mat", scene);
+    var texture = new BABYLON.Texture("https://i.imgur.com/7jDxfj0.jpg", scene);
+    mat.diffuseTexture = texture;
+
+    var columns = 6;  // 6 columns
+    var rows = 1;  // 1 row
+
+    //alien sprite
+    var faceUV = new Array(6);
+
+    //set all faces to same
+    for (var i = 0; i < 6; i++) {
+        faceUV[i] = new BABYLON.Vector4(i / columns, 0, (i + 1) / columns, 1 / rows);
+    }
+
+    // Wrap not set
+    var options1 = {
+        faceUV: faceUV
+    };
+
+    
+    var box1 = BABYLON.MeshBuilder.CreateBox('box', {}, scene);
+    box1.material = mat;
+
+    // GUI
+    var advancedTexture = BABYLON.GUI.AdvancedDynamicTexture.CreateFullscreenUI("UI");
+
+    var button = BABYLON.GUI.Button.CreateSimpleButton("but", "bigger box");
+    button.width = "200px";
+    button.height = "40px";
+    button.color = "white";
+    button.background = "green";
+    button.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_RIGHT;
+    advancedTexture.addControl(button);
+
+    button.onPointerClickObservable.add(function () {
+        box1.scaling.x  *=  1.1;
+        box1.scaling.y  *=  1.1;
+        box1.scaling.z  *=  1.1;
+    }); 
+
+
+    var button1 = BABYLON.GUI.Button.CreateSimpleButton("but", "new scene");
+    button1.width = "200px";
+    button1.height = "40px";
+    button1.color = "white";
+    button1.background = "red";
+    button1.horizontalAlignment = BABYLON.GUI.Control.HORIZONTAL_ALIGNMENT_LEFT;
+    advancedTexture.addControl(button1);
+
+    button1.onPointerClickObservable.add(function () {
+        createScene();
+    });
+
+    
+};
+
+
+
+createScene();
+
+engine.runRenderLoop(function () {
+    scene.render();
+});
+
+window.addEventListener("resize", function () {
+    engine.resize();
+});
+        }
+    </script>
+    <div>Anchor Test NOT WORKING</div>
+</body>
+</html>
